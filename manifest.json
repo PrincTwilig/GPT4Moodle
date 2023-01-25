@@ -1,0 +1,34 @@
+{
+    "manifest_version": 3,
+    "name": "AI Test Assistant",
+    "description": "An extension that uses AI to answer Moodle test questions for more efficient and accurate assessments.",
+    "version": "0.2",
+    "icons": {
+        "16": "icon.png",
+        "32": "icon.png",
+        "48": "icon.png",
+        "128": "icon.png"
+    },
+    "web_accessible_resources": [
+        {
+            "resources": [ "style.css" ],
+            "matches": ["<all_urls>"]
+        }
+      ],
+    "content_scripts": [
+    {
+        "matches": ["*://*/mod/quiz/*"],
+        "js": ["runer.js"],
+        "css": ["style.css"]
+    }
+    ],
+    "permissions": [
+        "storage",
+        "scripting",
+        "tabs"
+    ],
+    "host_permissions": ["*://*/mod/quiz/*"],
+    "action": {
+        "default_popup": "popup/popup.html"
+    }
+}
