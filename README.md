@@ -4,7 +4,7 @@ GPT4Moodle is a browser extension for Chrome that adds buttons next to each ques
 ## Dependencies
 + Chrome browser
 ## Installation
-1. Clone the repository to your local machine using `git clone https://github.com/<your-username>/GPT4Moodle.git`
+1. Clone the repository to your local machine using `git clone https://github.com/PrincTwilig/GPT4Moodle`
 2. Open Chrome and go to the extensions page by typing `chrome://extensions/` in the address bar.
 3. Turn on the developer mode by clicking the toggle switch in the top right corner of the page.
 4. Click on the "Load unpacked" button and select the cloned folder.
