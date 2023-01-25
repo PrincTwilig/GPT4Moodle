@@ -1,7 +1,9 @@
-function runner() {
+function create_buttons() {
     let quiz_boxes = document.querySelectorAll('.que.multichoice.deferredfeedback');
     quiz_boxes.forEach(function(element) {
         // creates button and listener
+        let clearfix = element.getElementsByClassName("formulation clearfix")[0];
+
         let button = document.createElement("BUTTON");
         let img = document.createElement("img")
 
@@ -11,14 +13,19 @@ function runner() {
         button.innerHTML = img.outerHTML + "  Answer";
         button.classList.add('answerButton')
 
-        let clearfix = element.getElementsByClassName("formulation clearfix")[0];
         clearfix.appendChild(button);
 
         button.addEventListener("click", function() {
             get_answer(element);
         });
-        /////////////////////////
-        // creates ? button, and text block with answer from gpt
+    });
+}
+
+function create_descriptions() {
+    let quiz_boxes = document.querySelectorAll('.que.multichoice.deferredfeedback');
+    quiz_boxes.forEach(function(element) {
+        let clearfix = element.getElementsByClassName("formulation clearfix")[0];
+
         let answer = document.createElement('div')
         let answer_block = document.createElement('div')
 
@@ -32,8 +39,15 @@ function runner() {
     });
 }
 
+
+function runer() {
+    create_buttons()
+    create_descriptions()
+}
+
+runer()
+
+
 function get_answer(element) {
     element.getElementsByClassName("answer_button")[0].classList.add('visible')
 }
-
-runner()
