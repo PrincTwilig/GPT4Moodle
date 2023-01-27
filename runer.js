@@ -44,8 +44,12 @@ function runer() {
     create_buttons()
     create_descriptions()
 }
+chrome.storage.local.get(["mode"]).then((result) => {
+    if(result.mode === "On"){
+        runer()
+    }
+});
 
-runer()
 
 
 function get_answer(element) {
