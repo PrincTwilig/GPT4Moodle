@@ -18,6 +18,7 @@ GPT4Moodle is a browser extension for Chrome that adds buttons next to each ques
 3. Make your changes and commit them using `git commit -m "<descriptive-message>"`
 4. Push the branch to GitHub using `git push -u origin <branch-name>`
 5. Create a pull request on GitHub for your changes to be reviewed and merged.
+
 **Or use github Desktop!**
 ## Issues
 If you encounter any issues or have suggestions for improvements, please open an issue on GitHub.
