@@ -71,6 +71,7 @@
     border-radius: 7px;
     color: white;
     overflow: auto;
+    width: max-content;
     max-width: 700px;
     padding: 10px;
 }

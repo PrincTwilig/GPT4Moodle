@@ -68,13 +68,27 @@ export default async function generateAnswer(question) {
     })
 
     const string_data = await resp.text()
+
+    if (string_data.includes('Only one message at a time.')) {
+      return "SECONDMSG"
+    }
+    if (string_data.includes('Too many requests in 1 hour')) {
+      return "OVERLOAD"
+    }
+    
     const text = data_to_text(string_data)
 
     console.log(text)
     return text;
   } catch (error) {
-    console.error(error);
-    accessTokenCache.delete('accessToken');
-    throw error;
+    if (error.message === 'CLOUDFLARE' || error.message === 'UNAUTHORIZED'){
+      return "CLOUDFLARE/UNAUTHORIZED";
+    } else {
+      console.error(error);
+      accessTokenCache.delete('accessToken');
+      throw error;
+    }
   }
 }
+
+// {"detail":"Only one message at a time. Please allow any other responses to complete before sending another message, or wait one minute."}
