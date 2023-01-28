@@ -36,6 +36,10 @@
     visibility: visible;
 }
 
+.text-bolded {
+    font-weight: bold;
+}
+
 .answer_button {
     visibility: hidden;
     position: absolute;
@@ -67,7 +71,8 @@
     border-radius: 7px;
     color: white;
     overflow: auto;
-    max-width: 5000%;
+    width: max-content;
+    max-width: 700px;
     padding: 10px;
 }
 
