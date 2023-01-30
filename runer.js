@@ -1,144 +1,143 @@
-function create_buttons() {
-    let quiz_boxes = document.querySelectorAll('.que.multichoice.deferredfeedback');
-    quiz_boxes.forEach(function(element) {
-        // creates button and listener
-        let clearfix = element.getElementsByClassName("formulation clearfix")[0];
+class GPTConfig {
+    constructor() {
+      this.status = localStorage.getItem('GPTStatus') || 'ready';
+    }
+  
+    save() {
+      localStorage.setItem('GPTStatus', this.status);
+    }
+  }
+  
+class QuizQuestion {
+    constructor(element) {
+      this.element = element;
+      this.clearfix = element.getElementsByClassName('formulation clearfix')[0];
+      this.answer = this.createAnswer();
+      this.answerBlock = this.createAnswerBlock();
+      this.answerButton = this.createAnswerButton();
+    }
+  
+    createAnswer() {
+      let answer = document.createElement('div');
+      let answerBlock = document.createElement('div');
+      answer.classList.add('answer_button');
+      answer.appendChild(answerBlock);
+      answer.innerHTML = '?';
+      this.clearfix.appendChild(answer);
+      return answer;
+    }
 
-        let button = document.createElement("BUTTON");
-        let img = document.createElement("img")
-
-        img.classList.add('buttonimg')
-        img.src = 'https://as1.ftcdn.net/v2/jpg/05/61/30/84/1000_F_561308400_YdQTUBFH9TaX3nbSiKqLjiJN4N2REoA3.png'
-
-        button.innerHTML = img.outerHTML + "  Answer";
-        button.classList.add('answerButton')
-
-        clearfix.appendChild(button);
-
-        button.addEventListener("click", function() {
-            get_answer(element);
+    createAnswerBlock() {
+        let answerBlock = document.createElement('div');
+        answerBlock.classList.add('answer_block');
+        this.answer.appendChild(answerBlock)
+        return answerBlock
+    }
+  
+    createAnswerButton() {
+      let button = document.createElement('BUTTON');
+      let img = document.createElement('img');
+      img.classList.add('buttonimg');
+      img.src = 'https://as1.ftcdn.net/v2/jpg/05/61/30/84/1000_F_561308400_YdQTUBFH9TaX3nbSiKqLjiJN4N2REoA3.png';
+      button.innerHTML = img.outerHTML + '  Answer';
+      button.classList.add('answerButton');
+      this.clearfix.appendChild(button);
+      return button;
+    }
+  
+    async getAnswer() {
+      let config = new GPTConfig();
+      this.answer.style.visibility = 'visible';
+      if (config.status === 'ready') {
+        config.status = 'working';
+        config.save();
+        this.answerBlock.innerHTML = 'Generating answer...';
+        let question = this.getQuestion();
+        let response = await new Promise((resolve) => {
+          chrome.runtime.sendMessage({ functionName: 'generateAnswer', input: question }, (response) => {
+            resolve(response);
+          });
         });
-    });
-}
-
-function create_descriptions() {
-    let quiz_boxes = document.querySelectorAll('.que.multichoice.deferredfeedback');
-    quiz_boxes.forEach(function(element) {
-        let clearfix = element.getElementsByClassName("formulation clearfix")[0];
-
-        let answer = document.createElement('div')
-        let answer_block = document.createElement('div')
-
-        answer_block.classList.add('answer_block')
-        answer.classList.add('answer_button')
-
-        answer.appendChild(answer_block)
-        answer.innerHTML = answer_block.outerHTML + '?'
-
-        clearfix.appendChild(answer)
-    });
-}
-
-
-
-
-
-
-function get_answer(element) {
-    LS.getItem('GPTStatus').then(status => {
-        console.log(status)
-        element.getElementsByClassName("answer_button")[0].classList.add('visible')
-        if (status === 'ready' || status === undefined) {
-            LS.setItem('GPTStatus', 'working')
         
-            element.getElementsByClassName('answer_block')[0].innerHTML = "Generating answer..."
-
-            const quest = get_question(element)
-        
-            chrome.runtime.sendMessage({functionName: "generateAnswer", input: quest}, response => {
-                let error = false
-
-                if (response.answer === "CLOUDFLARE/UNAUTHORIZED") {
-                    error = 'Login or pass cloudflare <a target="_blank" href="https://chat.openai.com/chat">ChatGPT</a>'
-                }
-                if (response.answer === "SECONDMSG") {
-                    error = 'Only one block at a time!'
-                }
-                if (response.answer === "OVERLOAD") {
-                    error = 'Too many requsts on one hour, try again later.'
-                }
-
-                if (error) {
-                    element.getElementsByClassName('answer_block')[0].innerHTML = error
-                    LS.setItem('GPTStatus', 'ready')
-                    return
-                }
-
-                const answer =  response.answer.replace(/(\r\n|\n|\r)/gm, "");
-                const answer_json = JSON.parse(answer)
-        
-                mark_answer(element, answer_json.letter)
-                element.getElementsByClassName('answer_block')[0].innerHTML = answer_json.explanation
-        
-                LS.setItem('GPTStatus', 'ready')
-            });
-        } else {
-            element.getElementsByClassName('answer_block')[0].innerHTML = 'Wait until other block finish...'
+        const response_error = this.error_check(response.answer)
+        if (response_error) {
+          this.answerBlock.innerHTML = response_error;
+          config.status = 'ready';
+          config.save();
+          return 
         }
-    })
-}
-
-
-
-
-
-
-function mark_answer(element, letter) {
-    element.querySelectorAll('.d-flex.w-100').forEach((ans) => {
-        if (ans.getElementsByClassName('answernumber')[0].innerHTML[0] === letter) {
-            ans.classList.add('text-bolded')
-        }
-    })
-}
-
-
-function get_question(element) {
-    let dict = {}
-
-    element.querySelectorAll('.d-flex.w-100').forEach((ans) => {
-        let answernumber = ans.getElementsByClassName('answernumber')[0].innerHTML[0]
-        let text = ans.getElementsByClassName('flex-fill')[0].innerHTML
-        dict[answernumber] = text
-    })
-
-    const promp = {
-        'question': element.getElementsByClassName('qtext')[0].innerHTML,
-        'answers': dict
+        let answer = JSON.parse(response.answer.replace(/(\r\n|)/g, ''));
+        this.markRightQuestion(answer.letter);
+        this.answerBlock.innerHTML = answer.explanation;
+        config.status = 'ready';
+        config.save();
+        return 'done'
+      }else {
+        this.answerBlock.innerHTML = 'Answer generation in progress, try again later.';
+       }
     }
 
-    let request = `Нижче буде наведене питання і варіанти відповіді, вибери одну правильну відповідь, та запиши відповідь в форматі json з двома ключами letter(буква відповіді) та explanation(пояснення чому ця відповідь), напиши відповідь лише у json нічого іншого\n\n`
-
-    request += `${promp.question}\n`
-
-    for (let key in promp.answers) {
-        request += `${key}. ${promp.answers[key]}\n`
+    error_check(response_text) {
+      let response_error = false
+      if (response_text === 'CLOUDFLARE/UNAUTHORIZED') {
+        response_error =
+          'Login or pass cloudflare <a target="_blank" href="https://chat.openai.com/chat">ChatGPT</a>';
+      }
+      if (response_text === 'SECONDMSG') {
+        response_error = 'Only one block at a time!';
+      }
+      if (response_text === 'OVERLOAD') {
+        response_error = 'Too many requsts on one hour, try again later.';
+      }
+      if (response_text === "UNKNOWNERROR") {
+        response_error = 'Unknown error ocured, try to reload page!';
+      }
+      return response_error
+    }
+    
+    markRightQuestion(letter) {
+        this.element.querySelectorAll('.d-flex.w-100').forEach(block => {
+            const answer = block.querySelectorAll('.answernumber')[0]
+            if (answer.innerHTML[0] === letter) {
+                block.style.fontWeight = 'bold';
+            }
+        })
     }
 
-    return request
+    getQuestion() {
+        let dict = {};
+    
+        this.element.querySelectorAll('.d-flex.w-100').forEach((ans) => {
+            let answernumber = ans.getElementsByClassName('answernumber')[0].innerHTML[0];
+            let text = ans.getElementsByClassName('flex-fill')[0].innerHTML;
+            dict[answernumber] = text;
+        });
+    
+        const prompt = {
+            'question': this.element.getElementsByClassName('qtext')[0].innerHTML,
+            'answers': dict
+        };
+    
+        let request = "Нижче буде наведене питання і варіанти відповіді, вибери одну правильну відповідь, та запиши відповідь в форматі json з двома ключами letter(буква відповіді) та explanation(пояснення чому ця відповідь), напиши відповідь лише у json нічого іншого\n\n";
+    
+        request += `${prompt.question}\n`;
+    
+        for (let key in prompt.answers) {
+            request += `${key}. ${prompt.answers[key]}\n`;
+        }
+    
+        return request;
+    }
 }
 
-function runer() {
-    create_buttons()
-    create_descriptions()
+localStorage.setItem('GPTStatus', 'ready')
+let elements = document.getElementsByClassName('que multichoice');
+for (let i = 0; i < elements.length; i++) {
+  let question = new QuizQuestion(elements[i]);
+  question.answerButton.addEventListener('click', async function() {
+    const status = await question.getAnswer();
+    if (status === 'done') {
+      question.answerButton.removeEventListener('click', arguments.callee, false)
+    }
+  });
 }
-
-const LS = {
-    getAllItems: () => chrome.storage.local.get(),
-    getItem: async key => (await chrome.storage.local.get(key))[key],
-    setItem: (key, val) => chrome.storage.local.set({[key]: val}),
-    removeItems: keys => chrome.storage.local.remove(keys),
-};
-
-LS.setItem('GPTStatus', 'ready')
-
-runer()

@@ -30,6 +30,7 @@ async function getAccessToken() {
 }
 
 function data_to_text(data) {
+  try {
     let temp = data.split('\n\n')
     temp = temp[temp.length-3]
     temp = temp.slice(6)
@@ -37,8 +38,19 @@ function data_to_text(data) {
 
     const json_data = JSON.parse(temp)
     const text = json_data.message.content.parts[0]
+    const conversationId = json_data.conversation_id
 
-    return text
+    return {
+      'text': text,
+      'conversationId': conversationId
+    }
+  } catch (error) {
+    console.log(`Errore in data retrieved!\n${error.message}`)
+    return {
+      'text': "UNKNOWNERROR",
+      'conversationId': "some-random-id"
+    }
+  }
 }
 
 export default async function generateAnswer(question) {
@@ -69,6 +81,7 @@ export default async function generateAnswer(question) {
 
     const string_data = await resp.text()
 
+
     if (string_data.includes('Only one message at a time.')) {
       return "SECONDMSG"
     }
@@ -76,10 +89,9 @@ export default async function generateAnswer(question) {
       return "OVERLOAD"
     }
     
-    const text = data_to_text(string_data)
+    const data = data_to_text(string_data)
 
-    console.log(text)
-    return text;
+    return data.text;
   } catch (error) {
     if (error.message === 'CLOUDFLARE' || error.message === 'UNAUTHORIZED'){
       return "CLOUDFLARE/UNAUTHORIZED";
@@ -90,5 +102,3 @@ export default async function generateAnswer(question) {
     }
   }
 }
-
-// {"detail":"Only one message at a time. Please allow any other responses to complete before sending another message, or wait one minute."}
