@@ -141,4 +141,8 @@ const LS = {
 
 LS.setItem('GPTStatus', 'ready')
 
-runer()
+
+chrome.storage.sync.get(["mode"]).then(result =>{
+    if(result.mode === "on")
+        runer()
+})
