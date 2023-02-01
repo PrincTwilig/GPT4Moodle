@@ -169,6 +169,8 @@ function quizes() {
 
 async function run() {
   await config.load()
+  config.data.status = 'ready'
+  await config.save()
 
   if (config.data.mode === 'on') {
     quizes();
