@@ -86,6 +86,9 @@ export default async function generateAnswer(question) {
     if (string_data.includes("We're currently processing too many requests.")) {
       return "SERVEROVERLOAD"
     }
+    if (!resp.ok) {
+      throw new Error(resp.status);
+    }
     
     const data = data_to_text(string_data)
 
@@ -98,7 +101,7 @@ export default async function generateAnswer(question) {
     } else {
       console.error(error);
       accessTokenCache.delete('accessToken');
-      throw error;
+      return "UNKNOWNERROR";
     }
   }
 }
