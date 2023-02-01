@@ -48,6 +48,24 @@ function data_to_text(data) {
   }
 }
 
+async function delete_chat(conversationId, accessToken) {
+  try {
+    fetch(`https://chat.openai.com/backend-api/conversation/${conversationId}`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${accessToken}`,
+    },
+    body: JSON.stringify({
+      is_visible: false
+    })
+  })
+  } catch (error) {
+    console.log(error)
+  }
+  
+}
+
 export default async function generateAnswer(question) {
   try {
     const accessToken = await getAccessToken();
@@ -91,6 +109,8 @@ export default async function generateAnswer(question) {
     }
     
     const data = data_to_text(string_data)
+
+    delete_chat(data.conversationId, accessToken)
 
     return data.text;
   } catch (error) {
