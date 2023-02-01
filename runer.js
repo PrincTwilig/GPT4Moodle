@@ -142,7 +142,7 @@ const LS = {
 LS.setItem('GPTStatus', 'ready')
 
 
-chrome.storage.sync.get(["mode"]).then(result =>{
-    if(result.mode === "on")
+chrome.storage.sync.get(["GPTConfig"]).then(result =>{
+    if(result.GPTConfig["mode"] === "on")
         runer()
 })
