@@ -83,6 +83,9 @@ export default async function generateAnswer(question) {
     if (string_data.includes('Too many requests in 1 hour')) {
       return "OVERLOAD"
     }
+    if (string_data.includes("We're currently processing too many requests.")) {
+      return "SERVEROVERLOAD"
+    }
     
     const data = data_to_text(string_data)
 

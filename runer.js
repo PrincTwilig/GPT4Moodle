@@ -106,13 +106,16 @@ class QuizQuestion {
           'Login or pass cloudflare <a target="_blank" href="https://chat.openai.com/chat">ChatGPT</a>';
       }
       if (response_text === 'SECONDMSG') {
-        response_error = 'Only one block at a time!';
+        response_error = 'Only one block at a time.';
       }
       if (response_text === 'OVERLOAD') {
         response_error = 'Too many requsts on one hour, try again later.';
       }
       if (response_text === "UNKNOWNERROR") {
-        response_error = 'Unknown error ocured, try to reload page or wait!';
+        response_error = 'Unknown error ocured, try to reload page or wait.';
+      }
+      if (response_text === "SERVEROVERLOAD") {
+        response_error = 'Server overload, too many requests, try again later.'
       }
       return response_error
     }
