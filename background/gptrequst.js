@@ -1,10 +1,5 @@
-function uuidv4() {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-      var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
-      return v.toString(16);
-    });
-  }
-  
+import { uuidv4, proxyFetch } from "./background_helper.js"
+
 
 const accessTokenCache = new Map();
 
@@ -13,7 +8,7 @@ async function getAccessToken() {
     return accessTokenCache.get('accessToken');
   }
 
-  const resp = await fetch('https://chat.openai.com/api/auth/session');
+  const resp = await proxyFetch('https://chat.openai.com/api/auth/session');
 
   if (resp.status === 403) {
     throw new Error('CLOUDFLARE');
@@ -56,7 +51,7 @@ function data_to_text(data) {
 export default async function generateAnswer(question) {
   try {
     const accessToken = await getAccessToken();
-    const resp = await fetch('https://chat.openai.com/backend-api/conversation', {
+    const resp = await proxyFetch('https://chat.openai.com/backend-api/conversation', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -95,6 +90,8 @@ export default async function generateAnswer(question) {
   } catch (error) {
     if (error.message === 'CLOUDFLARE' || error.message === 'UNAUTHORIZED'){
       return "CLOUDFLARE/UNAUTHORIZED";
+    } else if (error.message === 'PROXYFAILED') {
+      return "PROXYFAILED"
     } else {
       console.error(error);
       accessTokenCache.delete('accessToken');

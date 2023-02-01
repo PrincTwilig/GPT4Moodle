@@ -1,12 +1,30 @@
 class GPTConfig {
-    constructor() {
-      this.status = localStorage.getItem('GPTStatus') || 'ready';
-    }
-  
-    save() {
-      localStorage.setItem('GPTStatus', this.status);
-    }
+  constructor() {
+    this.data = {
+      mode: 'on',
+      status: 'ready',
+    };
   }
+
+  async load() {
+    return new Promise((resolve) => {
+      chrome.storage.sync.get(this.data, (items) => {
+        this.data = { ...this.data, ...items };
+        resolve();
+      });
+    });
+  }
+
+  async save() {
+    return new Promise((resolve) => {
+      chrome.storage.sync.set(this.data, () => {
+        resolve();
+      });
+    });
+  }
+}
+
+const config = new GPTConfig();
   
 class QuizQuestion {
     constructor(element) {
@@ -46,11 +64,12 @@ class QuizQuestion {
     }
   
     async getAnswer() {
-      let config = new GPTConfig();
+      await config.load();
       this.answer.style.visibility = 'visible';
-      if (config.status === 'ready') {
-        config.status = 'working';
+      if (config.data.status === 'ready') {
+        config.data.status = 'working';
         config.save();
+        
         this.answerBlock.innerHTML = 'Generating answer...';
         let question = this.getQuestion();
         let response = await new Promise((resolve) => {
@@ -62,14 +81,17 @@ class QuizQuestion {
         const response_error = this.error_check(response.answer)
         if (response_error) {
           this.answerBlock.innerHTML = response_error;
-          config.status = 'ready';
+          config.data.status = 'ready';
           config.save();
           return 
         }
+
         let answer = JSON.parse(response.answer.replace(/(\r\n|)/g, ''));
+
         this.markRightQuestion(answer.letter);
         this.answerBlock.innerHTML = answer.explanation;
-        config.status = 'ready';
+
+        config.data.status = 'ready';
         config.save();
         return 'done'
       }else {
@@ -90,7 +112,7 @@ class QuizQuestion {
         response_error = 'Too many requsts on one hour, try again later.';
       }
       if (response_text === "UNKNOWNERROR") {
-        response_error = 'Unknown error ocured, try to reload page!';
+        response_error = 'Unknown error ocured, try to reload page or wait!';
       }
       return response_error
     }
@@ -129,15 +151,25 @@ class QuizQuestion {
         return request;
     }
 }
-
-localStorage.setItem('GPTStatus', 'ready')
-let elements = document.getElementsByClassName('que multichoice');
-for (let i = 0; i < elements.length; i++) {
-  let question = new QuizQuestion(elements[i]);
-  question.answerButton.addEventListener('click', async function() {
-    const status = await question.getAnswer();
-    if (status === 'done') {
-      question.answerButton.removeEventListener('click', arguments.callee, false)
-    }
-  });
+function quizes() {
+  let elements = document.getElementsByClassName('que multichoice');
+  for (let i = 0; i < elements.length; i++) {
+    let question = new QuizQuestion(elements[i]);
+    question.answerButton.addEventListener('click', async function() {
+      const status = await question.getAnswer();
+      if (status === 'done') {
+        question.answerButton.removeEventListener('click', arguments.callee, false)
+      }
+    });
+  }
 }
+
+async function run() {
+  await config.load()
+
+  if (config.data.mode === 'on') {
+    quizes();
+  }
+}
+
+run()
