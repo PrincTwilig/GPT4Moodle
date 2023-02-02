@@ -116,8 +116,6 @@ export default async function generateAnswer(question) {
   } catch (error) {
     if (error.message === 'CLOUDFLARE' || error.message === 'UNAUTHORIZED'){
       return "CLOUDFLARE/UNAUTHORIZED";
-    } else if (error.message === 'PROXYFAILED') {
-      return "PROXYFAILED"
     } else {
       console.error(error);
       accessTokenCache.delete('accessToken');
