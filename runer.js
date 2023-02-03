@@ -1,6 +1,6 @@
 function create_buttons() {
     let quiz_boxes = document.querySelectorAll('.que.multichoice.deferredfeedback');
-    quiz_boxes.forEach(function(element) {
+    quiz_boxes.forEach(function (element) {
         // creates button and listener
         let clearfix = element.getElementsByClassName("formulation clearfix")[0];
 
@@ -8,14 +8,19 @@ function create_buttons() {
         let img = document.createElement("img")
 
         img.classList.add('buttonimg')
-        img.src = 'https://as1.ftcdn.net/v2/jpg/05/61/30/84/1000_F_561308400_YdQTUBFH9TaX3nbSiKqLjiJN4N2REoA3.png'
+        img.src = chrome.runtime.getURL('picture/ChatGPT.png')
+        let text = document.createElement("p")
+        text.innerHTML = "Почати"
+        text.classList.add("button_text")
 
-        button.innerHTML = img.outerHTML + "  Answer";
+        button.appendChild(img)
+        button.appendChild(text)
+
         button.classList.add('answerButton')
 
         clearfix.appendChild(button);
 
-        button.addEventListener("click", function() {
+        button.addEventListener("click", function () {
             get_answer(element);
         });
     });
@@ -23,7 +28,7 @@ function create_buttons() {
 
 function create_descriptions() {
     let quiz_boxes = document.querySelectorAll('.que.multichoice.deferredfeedback');
-    quiz_boxes.forEach(function(element) {
+    quiz_boxes.forEach(function (element) {
         let clearfix = element.getElementsByClassName("formulation clearfix")[0];
 
         let answer = document.createElement('div')
@@ -39,25 +44,23 @@ function create_descriptions() {
     });
 }
 
-
-
-
-
-
 function get_answer(element) {
     LS.getItem('GPTStatus').then(status => {
         console.log(status)
         element.getElementsByClassName("answer_button")[0].classList.add('visible')
+        element.getElementsByClassName("buttonimg")[0].classList.add('rotation')
+
+        element.getElementsByClassName("button_text")[0].innerHTML = "Загрузка"
         if (status === 'ready' || status === undefined) {
             LS.setItem('GPTStatus', 'working')
-        
+
             element.getElementsByClassName('answer_block')[0].innerHTML = "Generating answer..."
 
             const quest = get_question(element)
-        
-            chrome.runtime.sendMessage({functionName: "generateAnswer", input: quest}, response => {
-                let error = false
 
+            chrome.runtime.sendMessage({ functionName: "generateAnswer", input: quest }, response => {
+                let error = false
+                element.getElementsByClassName("buttonimg")[0].classList.remove('rotation')
                 if (response.answer === "CLOUDFLARE/UNAUTHORIZED") {
                     error = 'Login or pass cloudflare <a target="_blank" href="https://chat.openai.com/chat">ChatGPT</a>'
                 }
@@ -70,16 +73,26 @@ function get_answer(element) {
 
                 if (error) {
                     element.getElementsByClassName('answer_block')[0].innerHTML = error
+                    element.getElementsByClassName("button_text")[0].innerHTML = ""
+                    element.getElementsByClassName('buttonimg')[0].remove
+                    element.getElementsByClassName("buttonimg")[0].src = chrome.runtime.getURL("picture/Vector.png")
+                    element.getElementsByClassName("answerButton")[0].className = "newbutton"
+
                     LS.setItem('GPTStatus', 'ready')
                     return
                 }
 
-                const answer =  response.answer.replace(/(\r\n|\n|\r)/gm, "");
+                element.getElementsByClassName("answerButton")[0].className = "newbutton"
+                element.getElementsByClassName("buttonimg")[0].className = "newimg"
+                element.getElementsByClassName("button_text")[0].innerHTML = ""
+
+
+                const answer = response.answer.replace(/(\r\n|\n|\r)/gm, "");
                 const answer_json = JSON.parse(answer)
-        
+
                 mark_answer(element, answer_json.letter)
                 element.getElementsByClassName('answer_block')[0].innerHTML = answer_json.explanation
-        
+
                 LS.setItem('GPTStatus', 'ready')
             });
         } else {
@@ -135,14 +148,14 @@ function runer() {
 const LS = {
     getAllItems: () => chrome.storage.local.get(),
     getItem: async key => (await chrome.storage.local.get(key))[key],
-    setItem: (key, val) => chrome.storage.local.set({[key]: val}),
+    setItem: (key, val) => chrome.storage.local.set({ [key]: val }),
     removeItems: keys => chrome.storage.local.remove(keys),
 };
 
 LS.setItem('GPTStatus', 'ready')
 
 
-chrome.storage.sync.get(["mode"]).then(result =>{
-    if(result.mode === "on")
+chrome.storage.sync.get(["mode"]).then(result => {
+    if (result.mode === "on")
         runer()
 })

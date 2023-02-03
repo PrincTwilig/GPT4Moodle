@@ -1,35 +1,93 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300&display=swap');
+
 .answerButton {
     position: absolute;
     transform: scale(0.8);
     bottom: 10px;
     right: 20px;
-    box-shadow:inset 0px 1px 7px 0px #111212;
-    background:linear-gradient(to bottom, #1b1d1f 5%, #232729 100%);
-    background-color:#1b1d1f;
-    border-radius:12px;
-    display:inline-block;
-    cursor:pointer;
-    color:#ffffff;
-    padding: 7px;
-    font-family:Arial;
-    font-size:15px;
-    text-decoration:none;
+    background-color: #fff;
+    border-radius: 50px;
+    display: inline-block;
+    cursor: pointer;
+    border-color: #64646400;
+    text-decoration: none;
+    width: 50px;
+    height: 50px;
+    transition: all 0.5s ease-in-out;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 0;
+    gap: 0;
+    font-family: 'Inter', sans-serif;
 }
+
+
 .answerButton:hover {
-    background:linear-gradient(to bottom, #383f43 5%, #151718 100%);
-	background-color:#232729;
-    transition: all 0.5s ease;
+    gap: 5px;
+    font-size: 14px;
+    width: 120px;
+    height: 50px;
+    cursor: pointer;
+    color: #646464;
 }
+
 .answerButton:active {
     bottom: 9px;
-    transition: bottom 0.05s ease;
+}
+
+
+.button_text {
+    padding-top: 5px;
 }
 
 .buttonimg {
-    filter: invert(93%) sepia(100%) saturate(1%) hue-rotate(156deg) brightness(103%) contrast(102%);
+    filter: invert(51%) sepia(88%) saturate(13%) hue-rotate(337deg) brightness(94%) contrast(92%);
     object-fit: fill;
-    width: 25px;
-    height: 25px;
+    width: 30px;
+    height: 30px;
+    position: relative;
+}
+
+
+
+.newbutton {
+
+    position: absolute;
+    transform: scale(0.8);
+    bottom: 10px;
+    right: 20px;
+    background-color: #fff;
+    border-radius: 50px;
+    display: inline-block;
+    cursor: pointer;
+    border-color: #64646400;
+    text-decoration: none;
+    width: 50px;
+    height: 50px;
+    transition: all 0.5s ease-in-out;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.newimg{
+    filter: invert(93%) sepia(66%) saturate(688%) hue-rotate(62deg) brightness(85%) contrast(86%);
+    object-fit: fill;
+    width: 30px;
+    height: 30px;
+    position: relative;
+}
+.img_error{
+    object-fit: fill;
+    width: 20px;
+    height: 30px;
+    position: relative;
+}
+
+
+.answerButton:hover img {
+    filter: invert(71%) sepia(20%) saturate(943%) hue-rotate(140deg) brightness(92%) contrast(90%);
 }
 
 .visible {
@@ -47,13 +105,13 @@
     right: 7px;
     width: 15px;
     height: 15px;
-  border-radius: 7px;
-  background-color: rgb(24, 22, 22);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  cursor: pointer;
+    border-radius: 7px;
+    background-color: rgb(24, 22, 22);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    cursor: pointer;
 }
 
 .answer_button:hover {
@@ -76,6 +134,21 @@
     padding: 10px;
 }
 
-.answer_button:hover .answer_block{
+.answer_button:hover .answer_block {
     visibility: visible;
+}
+
+@keyframes rotation {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(359deg);
+    }
+}
+
+.rotation{
+    animation: rotation 2s infinite;
+
 }
