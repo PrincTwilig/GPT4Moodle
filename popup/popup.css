@@ -1,0 +1,182 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300&display=swap');
+
+* {
+	margin: 0;
+}
+
+
+/* body */
+
+body {
+	min-width: 350px;
+	max-width: 100%;
+	position: relative;
+	vertical-align: middle;
+	background-color: #F1F1F1;
+	font-family: 'Inter', sans-serif;
+}
+
+
+/* title */
+
+.title_popup {
+	background-color: #58BDCD;
+	padding: 20px 10px 10px 20px;
+	color: #FFFFFF;
+	margin: 0px;
+}
+
+
+/* text */
+
+#text_popup {
+	font-size: 14px;
+	color: #585858;
+	padding: 10px 20px 20px 20px;
+	margin-bottom: 0;
+}
+
+#Bold {
+	font-weight: bold;
+}
+
+h1 {
+	margin: 0px;
+	font-size: 25px;
+}
+
+
+/* radio_button */
+
+section {
+	min-height: inherit;
+
+	display: flex;
+	justify-content: space-around;
+	align-items: center;
+
+	position: relative;
+	padding-bottom: 20px;
+}
+
+section::before,
+section::after {
+	content: "";
+	display: block;
+
+	border-radius: 100%;
+
+	position: absolute;
+}
+
+
+.radio_button {
+	--primary: #58BDCD;
+	--other: #585858;
+}
+
+
+/* label */
+label {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	gap: 5px;
+
+	cursor: pointer;
+	position: relative;
+}
+
+
+/* input */
+input {
+	opacity: 0;
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%, -50%);
+	z-index: -1;
+}
+
+
+/* .design */
+.design {
+	width: 20px;
+	height: 20px;
+
+	border: 2px solid #aaaaaa;
+	border-radius: 5px;
+
+	position: relative;
+}
+
+.design::before,
+.design::after {
+	content: "";
+	display: block;
+
+	width: 16px;
+	height: 16px;
+
+	border-radius: inherit;
+
+	position: absolute;
+	transform: scale(0);
+	transform-origin: center center;
+}
+
+.design:before {
+	background: var(--other);
+	opacity: 0;
+	transition: .3s;
+}
+
+.design::after {
+	background: var(--primary);
+	opacity: .4;
+	transition: .6s;
+}
+
+
+/* .text */
+.text {
+	font-size: 13px;
+	color: var(--other);
+
+}
+
+
+/* checked state */
+input:checked+.design::before {
+	opacity: 1;
+	transform: scale(.6);
+}
+
+input[type="radio"]:checked ~ .text {
+	font-weight: bold;
+
+}
+
+
+/* other states */
+input:hover+.design,
+input:focus+.design {
+	border: 2px solid var(--primary);
+}
+
+input:hover+.design:before,
+input:focus+.design:before {
+	background: var(--primary);
+}
+
+input:hover~.text {
+	color: var(--primary);
+}
+
+
+input:focus+.design::after,
+input:active+.design::after {
+	opacity: .1;
+	transform: scale(.6);
+}
