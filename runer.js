@@ -27,132 +27,180 @@ class GPTConfig {
 const config = new GPTConfig();
   
 class QuizQuestion {
-    constructor(element) {
-      this.element = element;
-      this.clearfix = element.getElementsByClassName('formulation clearfix')[0];
-      this.answer = this.createAnswer();
-      this.answerBlock = this.createAnswerBlock();
-      this.answerButton = this.createAnswerButton();
-    }
-  
-    createAnswer() {
-      let answer = document.createElement('div');
-      let answerBlock = document.createElement('div');
-      answer.classList.add('answer_button');
-      answer.appendChild(answerBlock);
-      answer.innerHTML = '?';
-      this.clearfix.appendChild(answer);
-      return answer;
-    }
+  constructor(element) {
+    this.element = element;
+    this.clearfix = element.getElementsByClassName('formulation clearfix')[0];
+    this.answerButton = this.createAnswerButton();
+  }
 
-    createAnswerBlock() {
-        let answerBlock = document.createElement('div');
-        answerBlock.classList.add('answer_block');
-        this.answer.appendChild(answerBlock)
-        return answerBlock
-    }
-  
-    createAnswerButton() {
+  createAnswerButton() {
       let button = document.createElement('BUTTON');
       let img = document.createElement('img');
-      img.classList.add('buttonimg');
-      img.src = 'https://as1.ftcdn.net/v2/jpg/05/61/30/84/1000_F_561308400_YdQTUBFH9TaX3nbSiKqLjiJN4N2REoA3.png';
-      button.innerHTML = img.outerHTML + '  Answer';
-      button.classList.add('answerButton');
+      let text = document.createElement('p');
+
+      button.classList.add('answerButton', 'answerButtonH');
+
+      img.src = chrome.runtime.getURL('picture/ChatGPT.png')
+      text.innerHTML = "Answer"
+
+      button.appendChild(img);
+      button.appendChild(text);
+
       this.clearfix.appendChild(button);
       return button;
     }
-  
-    async getAnswer() {
-      await config.load();
-      this.answer.style.visibility = 'visible';
-      if (config.data.status === 'ready') {
-        config.data.status = 'working';
-        config.save();
-        
-        this.answerBlock.innerHTML = 'Generating answer...';
-        let question = this.getQuestion();
-        let response = await new Promise((resolve) => {
-          chrome.runtime.sendMessage({ functionName: 'generateAnswer', input: question }, (response) => {
-            resolve(response);
-          });
+
+  createAnswerBlock() {
+      let answerBlock = document.createElement('div');
+      answerBlock.classList.add('answer_block');
+      this.answerButton.appendChild(answerBlock)
+      return answerBlock
+  }
+
+  async getAnswer() {
+    await config.load();
+    if (config.data.status === 'ready') {
+      config.data.status = 'working';
+      config.save();
+      
+      const text = this.answerButton.getElementsByTagName("p")[0];
+      const img = this.answerButton.getElementsByTagName("img")[0];
+
+      try {
+        this.answerButton.removeChild(this.answerButton.getElementsByTagName("div")[0])
+      } catch {}
+    
+      this.answerButton.classList.remove('answerButtonE', 'answerButtonR')
+      img.src = chrome.runtime.getURL('picture/ChatGPT.png')
+
+      this.answerButton.classList.remove('answerButtonH');
+      this.answerButton.title = 'Generating...'
+      img.classList.add('rotation');
+
+      let question = this.getQuestion();
+      let response = await new Promise((resolve) => {
+        chrome.runtime.sendMessage({ functionName: 'generateAnswer', input: question }, (response) => {
+          resolve(response);
         });
+      });
+
+      img.classList.remove('rotation');
+      
+
+      const answer_block = this.createAnswerBlock();
+      this.answerButton.appendChild(answer_block)
+      this.answerButton.title = ''
+      
+      const response_error = this.error_check(response.answer)
+      if (response_error) {
+        img.src = chrome.runtime.getURL('picture/Vector.png')
+        this.answerButton.classList.add('answerButtonE');
+
+        this.typeText(answer_block, response_error);
         
-        const response_error = this.error_check(response.answer)
-        if (response_error) {
-          this.answerBlock.innerHTML = response_error;
-          config.data.status = 'ready';
-          config.save();
-          return 
-        }
-
-        let answer = JSON.parse(response.answer.replace(/(\r\n|)/g, ''));
-
-        this.markRightQuestion(answer.letter);
-        this.answerBlock.innerHTML = answer.explanation;
-
         config.data.status = 'ready';
         config.save();
-        return 'done'
-      }else {
-        this.answerBlock.innerHTML = 'Answer generation in progress, try again later.';
-       }
-    }
+        return 
+      }
 
-    error_check(response_text) {
-      let response_error = false
-      if (response_text === 'CLOUDFLARE/UNAUTHORIZED') {
-        response_error =
-          'Login or pass cloudflare <a target="_blank" href="https://chat.openai.com/chat">ChatGPT</a>';
-      }
-      if (response_text === 'SECONDMSG') {
-        response_error = 'Only one block at a time.';
-      }
-      if (response_text === 'OVERLOAD') {
-        response_error = 'Too many requsts on one hour, try again later.';
-      }
-      if (response_text === "UNKNOWNERROR") {
-        response_error = 'Unknown error ocured, try to reload page or wait.';
-      }
-      if (response_text === "SERVEROVERLOAD") {
-        response_error = 'Server overload, too many requests, try again later.'
-      }
-      return response_error
-    }
-    
-    markRightQuestion(letter) {
-        this.element.querySelectorAll('.d-flex.w-100').forEach(block => {
-            const answer = block.querySelectorAll('.answernumber')[0]
-            if (answer.innerHTML[0] === letter) {
-                block.style.fontWeight = 'bold';
-            }
-        })
-    }
+      let answer = JSON.parse(response.answer.replace(/(\r\n|)/g, ''));
 
-    getQuestion() {
-        let dict = {};
-    
-        this.element.querySelectorAll('.d-flex.w-100').forEach((ans) => {
-            let answernumber = ans.getElementsByClassName('answernumber')[0].innerHTML[0];
-            let text = ans.getElementsByClassName('flex-fill')[0].innerHTML;
-            dict[answernumber] = text;
-        });
-    
-        const prompt = {
-            'question': this.element.getElementsByClassName('qtext')[0].innerHTML,
-            'answers': dict
-        };
-    
-        let request = "Нижче буде наведене питання і варіанти відповіді, вибери одну правильну відповідь, та запиши відповідь в форматі json з двома ключами letter(буква відповіді) та explanation(пояснення чому ця відповідь), напиши відповідь лише у json нічого іншого\n\n";
-    
-        request += `${prompt.question}\n`;
-    
-        for (let key in prompt.answers) {
-            request += `${key}. ${prompt.answers[key]}\n`;
+      this.markRightQuestion(answer.letter);
+      this.typeText(answer_block, answer.explanation);
+      this.answerButton.classList.add('answerButtonR');
+
+      config.data.status = 'ready';
+      config.save();
+      return 'done'
+    }else {
+      this.answerBlock.innerHTML = 'Answer generation in progress. Try again when other block finish.';
+      }
+  }
+
+  error_check(response_text) {
+    let response_error = false
+    if (response_text === 'CLOUDFLARE/UNAUTHORIZED') {
+      response_error =
+        'Login or pass cloudflare <a target="_blank" href="https://chat.openai.com/chat">ChatGPT</a>, then try again.';
+    }
+    if (response_text === 'SECONDMSG') {
+      response_error = 'Only one block at a time. Try again when other block finish.';
+    }
+    if (response_text === 'OVERLOAD') {
+      response_error = 'Too many requsts on one hour, try again later.';
+    }
+    if (response_text === "UNKNOWNERROR") {
+      response_error = 'Unknown error ocured, try to reload page or wait.';
+    }
+    if (response_text === "SERVEROVERLOAD") {
+      response_error = 'Server overload, too many requests, try again later.'
+    }
+    return response_error
+  }
+  
+  markRightQuestion(letter) {
+      this.element.querySelectorAll('.d-flex.w-100').forEach(block => {
+          const answer = block.querySelectorAll('.answernumber')[0]
+          if (answer.innerHTML[0] === letter) {
+              block.style.fontWeight = 'bold';
+          }
+      })
+  }
+
+  getQuestion() {
+      let dict = {};
+  
+      this.element.querySelectorAll('.d-flex.w-100').forEach((ans) => {
+          let answernumber = ans.getElementsByClassName('answernumber')[0].innerHTML[0];
+          let text = ans.getElementsByClassName('flex-fill')[0].innerHTML;
+          dict[answernumber] = text;
+      });
+  
+      const prompt = {
+          'question': this.element.getElementsByClassName('qtext')[0].innerHTML,
+          'answers': dict
+      };
+  
+      let request = "Нижче буде наведене питання і варіанти відповіді, вибери одну правильну відповідь, та запиши відповідь в форматі json з двома ключами letter(буква відповіді) та explanation(пояснення чому ця відповідь), напиши відповідь лише у json нічого іншого\n\n";
+  
+      request += `${prompt.question}\n`;
+  
+      for (let key in prompt.answers) {
+          request += `${key}. ${prompt.answers[key]}\n`;
+      }
+  
+      return request;
+  }
+
+  typeText(element, text) {
+    let i = 0;
+    let typingInterval = setInterval(() => {
+      if (i < text.length) {
+        let currentChar = text.charAt(i);
+        if (currentChar === '<') {
+          // check if this is a link
+          let linkStart = i;
+          while (text.charAt(i) !== '>') {
+            i++;
+          }
+          let linkEnd = i;
+          let linkTag = text.substring(linkStart, linkEnd + 1);
+          let linkHref = linkTag.match(/href="(.*?)"/)[1];
+          let linkText = text.substring(linkEnd + 1, text.indexOf('</a>', linkEnd));
+          let link = document.createElement('a');
+          link.innerHTML = linkText;
+          link.href = linkHref;
+          element.appendChild(link);
+          i = text.indexOf('</a>', linkEnd) + 4;
+        } else {
+          element.innerHTML += currentChar;
         }
-    
-        return request;
-    }
+        i++;
+      } else {
+        clearInterval(typingInterval);
+      }
+    }, 2000 / text.length);
+  } 
 }
 function quizes() {
   let elements = document.getElementsByClassName('que multichoice');
