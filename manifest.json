@@ -2,7 +2,7 @@
     "manifest_version": 3,
     "name": "AI Test Assistant",
     "description": "An extension that uses AI to answer Moodle test questions for more efficient and accurate assessments.",
-    "version": "0.2",
+    "version": "0.8",
     "icons": {
         "16": "icon.png",
         "32": "icon.png",

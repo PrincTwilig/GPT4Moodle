@@ -63,7 +63,6 @@ class QuizQuestion {
       config.data.status = 'working';
       config.save();
       
-      const text = this.answerButton.getElementsByTagName("p")[0];
       const img = this.answerButton.getElementsByTagName("img")[0];
 
       try {
@@ -112,9 +111,7 @@ class QuizQuestion {
       config.data.status = 'ready';
       config.save();
       return 'done'
-    }else {
-      this.answerBlock.innerHTML = 'Answer generation in progress. Try again when other block finish.';
-      }
+    }
   }
 
   error_check(response_text) {
@@ -190,6 +187,8 @@ class QuizQuestion {
           let link = document.createElement('a');
           link.innerHTML = linkText;
           link.href = linkHref;
+          link.target = "_blank";
+          link.rel = "noopener noreferrer";
           element.appendChild(link);
           i = text.indexOf('</a>', linkEnd) + 4;
         } else {
@@ -200,8 +199,10 @@ class QuizQuestion {
         clearInterval(typingInterval);
       }
     }, 2000 / text.length);
-  } 
+  }
 }
+
+
 function quizes() {
   let elements = document.getElementsByClassName('que multichoice');
   for (let i = 0; i < elements.length; i++) {
