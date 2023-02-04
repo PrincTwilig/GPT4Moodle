@@ -70,7 +70,6 @@ class QuizQuestion {
       } catch {}
     
       this.answerButton.classList.remove('answerButtonE', 'answerButtonR')
-      img.src = chrome.runtime.getURL('picture/ChatGPT.png')
 
       this.answerButton.classList.remove('answerButtonH');
       this.answerButton.title = 'Generating...'
@@ -92,7 +91,6 @@ class QuizQuestion {
       
       const response_error = this.error_check(response.answer)
       if (response_error) {
-        img.src = chrome.runtime.getURL('picture/Vector.png')
         this.answerButton.classList.add('answerButtonE');
 
         this.typeText(answer_block, response_error);
