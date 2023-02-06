@@ -4,28 +4,21 @@ class GPTConfig {
       mode: 'on',
       status: 'ready',
     };
+    this.load();
   }
 
   async load() {
-    return new Promise((resolve) => {
-      chrome.storage.sync.get(this.data, (items) => {
-        this.data = { ...this.data, ...items };
-        resolve();
-      });
-    });
+    const items = await chrome.storage.sync.get(["GPTConfig"])
+    this.data = { ...this.data, ...items.GPTConfig }
   }
 
-  async save() {
-    return new Promise((resolve) => {
-      chrome.storage.sync.set(this.data, () => {
-        resolve();
-      });
-    });
+    save() {
+    chrome.storage.sync.set({"GPTConfig": this.data})
   }
 }
 
 const config = new GPTConfig();
-  
+
 class QuizQuestion {
   constructor(element) {
     this.element = element;
@@ -58,7 +51,7 @@ class QuizQuestion {
   }
 
   async getAnswer() {
-    await config.load();
+    config.load();
     if (config.data.status === 'ready') {
       config.data.status = 'working';
       config.save();
@@ -221,6 +214,7 @@ async function run() {
 
   if (config.data.mode === 'on') {
     quizes();
+    return
   }
 }
 
