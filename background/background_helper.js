@@ -14,7 +14,7 @@ export function uuidv4() {
         throw new Error('Fetch without proxy failed');
       }
     } catch (error) {
-      console.error(error);
+      console.log(error);
       const proxyListResponse = await fetch('https://www.proxyscan.io/api/proxy?limit=5&not_country=cn,ir,kp,ru,by,ua,ve&ping=500&uptime=50');
       const proxyList = await proxyListResponse.json();
   
@@ -36,7 +36,7 @@ export function uuidv4() {
             break;
           }
         } catch (error) {
-          console.error(error);
+          console.log(error);
         }
       }
     }

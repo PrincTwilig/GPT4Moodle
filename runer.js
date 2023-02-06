@@ -195,9 +195,30 @@ class QuizQuestion {
 
 
 function quizes() {
-  let elements = document.getElementsByClassName('que multichoice');
+  const elements = document.getElementsByClassName('que multichoice');
   for (let i = 0; i < elements.length; i++) {
     let question = new QuizQuestion(elements[i]);
+    question.answerButton.addEventListener('click', async function() {
+      const status = await question.getAnswer();
+      if (status === 'done') {
+        question.answerButton.removeEventListener('click', arguments.callee, false)
+      }
+    });
+  }
+}
+
+async function auto() {
+  const elements = document.getElementsByClassName('que multichoice');
+  let questions = []
+
+  for (let i = 0; i < elements.length; i++) {
+    questions.push(new QuizQuestion(elements[i]))
+  }
+
+  for (let i = 0; i < questions.length; i++) {
+    const question = questions[i]
+    await question.getAnswer();
+
     question.answerButton.addEventListener('click', async function() {
       const status = await question.getAnswer();
       if (status === 'done') {
@@ -210,10 +231,14 @@ function quizes() {
 async function run() {
   await config.load()
   config.data.status = 'ready'
-  await config.save()
+  config.save()
 
   if (config.data.mode === 'on') {
     quizes();
+    return
+  }
+  if (config.data.mode === 'auto') {
+    auto();
     return
   }
 }
