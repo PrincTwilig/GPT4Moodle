@@ -1,81 +1,118 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300&display=swap');
+
+* {
+    font-family: 'Inter', sans-serif;
+}
+
 .answerButton {
     position: absolute;
-    transform: scale(0.8);
+    padding: 5px;
     bottom: 10px;
     right: 20px;
-    box-shadow:inset 0px 1px 7px 0px #111212;
-    background:linear-gradient(to bottom, #1b1d1f 5%, #232729 100%);
-    background-color:#1b1d1f;
-    border-radius:12px;
-    display:inline-block;
-    cursor:pointer;
-    color:#ffffff;
-    padding: 7px;
-    font-family:Arial;
-    font-size:15px;
-    text-decoration:none;
-}
-.answerButton:hover {
-    background:linear-gradient(to bottom, #383f43 5%, #151718 100%);
-	background-color:#232729;
-    transition: all 0.5s ease;
-}
-.answerButton:active {
-    bottom: 9px;
-    transition: bottom 0.05s ease;
+    background-color: #fff;
+    border: none;
+    border-radius: 50px;
+    width: max-content;
+    max-width: 120px;
+    min-width: 40px;
+    min-height: 40px;
+    height: max-content;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 0;
+    gap: 0;
+    transition: all 0.5s ease-in-out;
 }
 
-.buttonimg {
-    filter: invert(93%) sepia(100%) saturate(1%) hue-rotate(156deg) brightness(103%) contrast(102%);
-    object-fit: fill;
+.answerButtonH:hover {
+    font-size: 12px;
+    gap: 5px;
+}
+
+.answerButton p {
+    margin: 0 !important;
+    cursor: pointer;
+    color: #646464;
+}
+
+
+.answerButton img {
     width: 25px;
     height: 25px;
+    filter: invert(62%) sepia(0%) saturate(32%) hue-rotate(139deg) brightness(92%) contrast(89%);
 }
 
-.visible {
+.answerButtonH:hover img {
+    filter: invert(73%) sepia(64%) saturate(391%) hue-rotate(145deg) brightness(84%) contrast(89%);
+}
+
+.answerButtonE img {
+    filter: invert(29%) sepia(85%) saturate(2625%) hue-rotate(345deg) brightness(103%) contrast(86%) !important;
+}
+
+.answerButtonE:hover div {
     visibility: visible;
+    opacity: 1;
+    transform: translateY(0);
 }
 
-.text-bolded {
-    font-weight: bold;
+.answerButtonR img {
+    filter: invert(75%) sepia(16%) saturate(1270%) hue-rotate(87deg) brightness(91%) contrast(89%) !important;
 }
 
-.answer_button {
-    visibility: hidden;
-    position: absolute;
-    bottom: 10px;
-    right: 7px;
-    width: 15px;
-    height: 15px;
-  border-radius: 7px;
-  background-color: rgb(24, 22, 22);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  cursor: pointer;
+.answerButtonR:hover div {
+    visibility: visible;
+    opacity: 1;
+    transform: translateY(0);
 }
 
-.answer_button:hover {
-    background-color: rgb(40, 37, 37);
-    transition: background-color 0.3s;
-}
+
+
+
+
+
 
 .answer_block {
-    top: 80%;
-    right: 80%;
+    top: 90%;
+    right: 20%;
     position: absolute;
     visibility: hidden;
-    background-color: #111212;
+    background-color: #fff;
     z-index: 1;
     border-radius: 7px;
-    color: white;
+    color: #646464;
     overflow: auto;
     width: max-content;
-    max-width: 700px;
+    max-width: 400px;
     padding: 10px;
+    font-size: 14px;
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+    user-select: text;
 }
 
-.answer_button:hover .answer_block{
-    visibility: visible;
+.answer_block a:visited {
+    color: #EC3D3D;
+}
+
+.answer_block a:hover {
+    color: #FF0000;
+}
+
+
+@keyframes rotation {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(359deg);
+    }
+}
+
+.rotation {
+    animation: rotation 2s infinite;
+    filter: invert(88%) sepia(10%) saturate(7435%) hue-rotate(153deg) brightness(98%) contrast(91%) !important;
 }
