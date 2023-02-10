@@ -27,9 +27,7 @@
     }
     ],
     "permissions": [
-        "storage",
-        "scripting",
-        "tabs"
+        "storage"
     ],
     "host_permissions": ["*://*/mod/quiz/*"],
     "action": {
