@@ -1,10 +1,5 @@
-function uuidv4() {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-      var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
-      return v.toString(16);
-    });
-  }
-  
+import { uuidv4, proxyFetch } from "./background_helper.js"
+
 
 const accessTokenCache = new Map();
 
@@ -13,7 +8,7 @@ async function getAccessToken() {
     return accessTokenCache.get('accessToken');
   }
 
-  const resp = await fetch('https://chat.openai.com/api/auth/session');
+  const resp = await proxyFetch('https://chat.openai.com/api/auth/session');
 
   if (resp.status === 403) {
     throw new Error('CLOUDFLARE');
@@ -30,6 +25,7 @@ async function getAccessToken() {
 }
 
 function data_to_text(data) {
+  try {
     let temp = data.split('\n\n')
     temp = temp[temp.length-3]
     temp = temp.slice(6)
@@ -37,14 +33,43 @@ function data_to_text(data) {
 
     const json_data = JSON.parse(temp)
     const text = json_data.message.content.parts[0]
+    const conversationId = json_data.conversation_id
 
-    return text
+    return {
+      'text': text,
+      'conversationId': conversationId
+    }
+  } catch (error) {
+    console.log(`Errore in data retrieved!\n${error.message}`)
+    return {
+      'text': "UNKNOWNERROR",
+      'conversationId': "some-random-id"
+    }
+  }
+}
+
+async function delete_chat(conversationId, accessToken) {
+  try {
+    fetch(`https://chat.openai.com/backend-api/conversation/${conversationId}`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${accessToken}`,
+    },
+    body: JSON.stringify({
+      is_visible: false
+    })
+  })
+  } catch (error) {
+    console.log(error)
+  }
+  
 }
 
 export default async function generateAnswer(question) {
   try {
     const accessToken = await getAccessToken();
-    const resp = await fetch('https://chat.openai.com/backend-api/conversation', {
+    const resp = await proxyFetch('https://chat.openai.com/backend-api/conversation', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -69,26 +94,32 @@ export default async function generateAnswer(question) {
 
     const string_data = await resp.text()
 
+
     if (string_data.includes('Only one message at a time.')) {
       return "SECONDMSG"
     }
     if (string_data.includes('Too many requests in 1 hour')) {
       return "OVERLOAD"
     }
+    if (string_data.includes("We're currently processing too many requests.")) {
+      return "SERVEROVERLOAD"
+    }
+    if (!resp.ok) {
+      throw new Error(resp.status);
+    }
     
-    const text = data_to_text(string_data)
+    const data = data_to_text(string_data)
 
-    console.log(text)
-    return text;
+    delete_chat(data.conversationId, accessToken)
+
+    return data.text;
   } catch (error) {
     if (error.message === 'CLOUDFLARE' || error.message === 'UNAUTHORIZED'){
       return "CLOUDFLARE/UNAUTHORIZED";
     } else {
       console.error(error);
       accessTokenCache.delete('accessToken');
-      throw error;
+      return "UNKNOWNERROR";
     }
   }
 }
-
-// {"detail":"Only one message at a time. Please allow any other responses to complete before sending another message, or wait one minute."}
