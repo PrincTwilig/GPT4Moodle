@@ -198,9 +198,11 @@ function quizes() {
   const elements = document.getElementsByClassName('que multichoice');
   for (let i = 0; i < elements.length; i++) {
     let question = new QuizQuestion(elements[i]);
-    question.answerButton.addEventListener('click', async function() {
+    question.answerButton.addEventListener('click', async function(event) {
+      event.preventDefault();
       const status = await question.getAnswer();
       if (status === 'done') {
+        question.answerButton.disabled = true;
         question.answerButton.removeEventListener('click', arguments.callee, false)
       }
     });
@@ -219,9 +221,11 @@ async function auto() {
     const question = questions[i]
     await question.getAnswer();
 
-    question.answerButton.addEventListener('click', async function() {
+    question.answerButton.addEventListener('click', async function(event) {
+      event.preventDefault()
       const status = await question.getAnswer();
       if (status === 'done') {
+        question.answerButton.disabled = true;
         question.answerButton.removeEventListener('click', arguments.callee, false)
       }
     });
