@@ -11,6 +11,7 @@
     right: 20px;
     background-color: #fff;
     border: none;
+    outline: 0 !important;
     border-radius: 50px;
     width: max-content;
     max-width: 120px;
