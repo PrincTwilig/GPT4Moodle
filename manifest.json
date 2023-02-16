@@ -2,7 +2,7 @@
     "manifest_version": 3,
     "name": "GPT4Moodle",
     "description": "Get quick answers and explanations for Moodle quiz questions with GPT4Moodle, a Chrome extension powered by ChatGPT.",
-    "version": "1.0.3",
+    "version": "1.0",
     "icons": {
         "16": "icon.png",
         "32": "icon.png",
