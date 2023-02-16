@@ -1,36 +1,34 @@
 {
-    "manifest_version": 3,
-    "name": "GPT4Moodle",
-    "description": "Get quick answers and explanations for Moodle quiz questions with GPT4Moodle, a Chrome extension powered by ChatGPT.",
-    "version": "1.0",
-    "icons": {
-        "16": "icon.png",
-        "32": "icon.png",
-        "48": "icon.png",
-        "128": "icon.png"
-    },
-    "background": {
-        "service_worker": "background/background.js",
-        "type": "module"
-      },
-    "web_accessible_resources": [
-        {
-            "resources": [ "style.css", "picture/*" ],
-            "matches": ["<all_urls>"]
-        }
-      ],
-    "content_scripts": [
+  "manifest_version": 3,
+  "name": "GPT4Moodle",
+  "description": "Get quick answers and explanations for Moodle quiz questions with GPT4Moodle, a Chrome extension powered by ChatGPT.",
+  "version": "1.03",
+  "icons": {
+    "16": "icon.png",
+    "32": "icon.png",
+    "48": "icon.png",
+    "128": "icon.png"
+  },
+  "background": {
+    "service_worker": "background/background.js",
+    "type": "module"
+  },
+  "web_accessible_resources": [
     {
-        "matches": ["*://*/mod/quiz/*"],
-        "js": ["runer.js"],
-        "css": ["style.css"]
+      "resources": ["style.css", "picture/*"],
+      "matches": ["<all_urls>"]
     }
-    ],
-    "permissions": [
-        "storage"
-    ],
-    "host_permissions": ["*://*/mod/quiz/*"],
-    "action": {
-        "default_popup": "popup/popup.html"
+  ],
+  "content_scripts": [
+    {
+      "matches": ["*://*/mod/quiz/*"],
+      "js": ["runer.js"],
+      "css": ["style.css"]
     }
+  ],
+  "permissions": ["storage"],
+  "host_permissions": ["*://*/mod/quiz/*"],
+  "action": {
+    "default_popup": "popup/popup.html"
+  }
 }
