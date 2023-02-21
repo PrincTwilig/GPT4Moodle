@@ -71,12 +71,6 @@
     transform: translateY(0);
 }
 
-
-
-
-
-
-
 .answer_block {
     top: 90%;
     right: 20%;
@@ -95,6 +89,7 @@
     transform: translateY(-10px);
     transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
     box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+    cursor: text;
     user-select: text !important;
 }
 
