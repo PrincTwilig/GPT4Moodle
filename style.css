@@ -1,118 +1,122 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300&display=swap");
 
 * {
-    font-family: 'Inter', sans-serif;
+  font-family: "Inter", sans-serif;
 }
 
 .answerButton {
-    position: absolute;
-    padding: 5px;
-    bottom: 10px;
-    right: 20px;
-    background-color: #fff;
-    border: none;
-    border-radius: 50px;
-    width: max-content;
-    max-width: 120px;
-    min-width: 40px;
-    min-height: 40px;
-    height: max-content;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 0;
-    gap: 0;
-    transition: all 0.5s ease-in-out;
+  position: absolute;
+  padding: 5px;
+  bottom: 10px;
+  right: 20px;
+  background-color: #fff;
+  border: none;
+  border-radius: 50px;
+  width: max-content;
+  max-width: 120px;
+  min-width: 40px;
+  min-height: 40px;
+  height: max-content;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 0;
+  gap: 0;
+  box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+  transition: all 0.5s ease-in-out;
 }
 
 .answerButton:focus {
-    outline: 0 !important;
+  outline: 0 !important;
 }
 
 .answerButtonH:hover {
-    font-size: 12px;
-    gap: 5px;
+  font-size: 12px;
+  gap: 5px;
 }
 
 .answerButton p {
-    margin: 0 !important;
-    cursor: pointer;
-    color: #646464;
+  margin: 0 !important;
+  cursor: pointer;
+  color: #646464;
 }
 
-
 .answerButton img {
-    width: 25px;
-    height: 25px;
-    filter: invert(62%) sepia(0%) saturate(32%) hue-rotate(139deg) brightness(92%) contrast(89%);
+  width: 25px;
+  height: 25px;
+  filter: invert(62%) sepia(0%) saturate(32%) hue-rotate(139deg) brightness(92%)
+    contrast(89%);
 }
 
 .answerButtonH:hover img {
-    filter: invert(73%) sepia(64%) saturate(391%) hue-rotate(145deg) brightness(84%) contrast(89%);
+  filter: invert(73%) sepia(64%) saturate(391%) hue-rotate(145deg)
+    brightness(84%) contrast(89%);
 }
 
 .answerButtonE img {
-    filter: invert(29%) sepia(85%) saturate(2625%) hue-rotate(345deg) brightness(103%) contrast(86%) !important;
+  filter: invert(29%) sepia(85%) saturate(2625%) hue-rotate(345deg)
+    brightness(103%) contrast(86%) !important;
 }
 
 .answerButtonE:hover div {
-    visibility: visible;
-    opacity: 1;
-    transform: translateY(0);
+  visibility: visible;
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .answerButtonR img {
-    filter: invert(75%) sepia(16%) saturate(1270%) hue-rotate(87deg) brightness(91%) contrast(89%) !important;
+  filter: invert(75%) sepia(16%) saturate(1270%) hue-rotate(87deg)
+    brightness(91%) contrast(89%) !important;
 }
 
 .answerButtonR:hover div {
-    visibility: visible;
-    opacity: 1;
-    transform: translateY(0);
+  visibility: visible;
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .answer_block {
-    top: 90%;
-    right: 20%;
-    position: absolute;
-    visibility: hidden;
-    background-color: #fff;
-    z-index: 1;
-    border-radius: 7px;
-    color: #646464;
-    overflow: auto;
-    width: max-content;
-    max-width: 400px;
-    padding: 10px;
-    font-size: 14px;
-    opacity: 0;
-    transform: translateY(-10px);
-    transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
-    box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
-    cursor: text;
-    user-select: text !important;
+  top: 90%;
+  right: 20%;
+  position: absolute;
+  visibility: hidden;
+  background-color: #fff;
+  z-index: 1;
+  border-radius: 7px;
+  color: #646464;
+  overflow: auto;
+  width: max-content;
+  max-width: 400px;
+  padding: 10px;
+  font-size: 14px;
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+  box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+  cursor: text;
+  user-select: text !important;
 }
 
 .answer_block a:visited {
-    color: #EC3D3D;
+  color: #ec3d3d;
 }
 
 .answer_block a:hover {
-    color: #FF0000;
+  color: #ff0000;
 }
 
-
 @keyframes rotation {
-    0% {
-        transform: rotate(0deg);
-    }
+  0% {
+    transform: rotate(0deg);
+  }
 
-    100% {
-        transform: rotate(359deg);
-    }
+  100% {
+    transform: rotate(359deg);
+  }
 }
 
 .rotation {
-    animation: rotation 2s infinite;
-    filter: invert(88%) sepia(10%) saturate(7435%) hue-rotate(153deg) brightness(98%) contrast(91%) !important;
+  animation: rotation 2s infinite;
+  filter: invert(88%) sepia(10%) saturate(7435%) hue-rotate(153deg)
+    brightness(98%) contrast(91%) !important;
 }
