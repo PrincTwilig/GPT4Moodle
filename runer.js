@@ -97,7 +97,12 @@ class QuizQuestion {
         return;
       }
 
-      let answer = JSON.parse(response.answer.replace(/(\r\n|)/g, ""));
+      let answer
+      try {
+        answer = JSON.parse(response.answer.replace(/(\r\n|)/g, ""));
+      } catch {
+        answer = `Failed to parse:\n${response.answer}`
+      }
 
       this.markRightQuestion(answer.letter);
       this.typeText(answer_block, answer.explanation);
@@ -141,19 +146,35 @@ class QuizQuestion {
     });
   }
 
-  getQuestion() {
-    let dict = {};
+  parseAnswersMethods = [
+    () => { // method 1
+      const dict = {};
 
-    let answernumber = 1;
-    this.element.querySelectorAll(".d-flex.w-100").forEach((ans) => {
-      const text = ans.getElementsByClassName("flex-fill")[0].textContent;
-      dict[answernumber] = text;
-      answernumber = answernumber + 1;
-    });
+      let answernumber = 1;
+      this.element.querySelectorAll(".d-flex.w-100").forEach((ans) => {
+        const text = ans.getElementsByClassName("flex-fill")[0].textContent;
+        dict[answernumber] = text;
+        answernumber = answernumber + 1;
+      });
+
+      return dict;
+    },
+    () => Object.fromEntries( // method 2
+      Array.from(this.element.querySelectorAll('.answer label')).map(
+        e => [e.querySelector('span').innerText.trim(), e.childNodes[1].data.trim()]
+    ))
+  ]
+
+  getQuestion() {
+    let answers = {}
+
+    for (let i = 0; i < this.parseAnswersMethods.length && Object.keys(answers).length === 0; i++) {
+      answers = this.parseAnswersMethods[i]();
+    }
 
     const prompt = {
       question: this.element.getElementsByClassName("qtext")[0].textContent,
-      answers: dict,
+      answers
     };
 
     let request =
